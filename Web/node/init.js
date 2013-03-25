@@ -2,7 +2,7 @@ var http = require('http');
 var fs = require('fs');
 var io = require('socket.io');
 var url = require('url');
-var sp = require('../../../node-libspotify');
+var sp = require('node-libspotify');
 var Speaker = require('speaker');
 
 var config, lang, user;
