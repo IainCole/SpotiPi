@@ -1,8 +1,0 @@
-{
-	"port": 1337,
-    "audio": {
-        "channels": 2,
-        "bitDepth": 16,
-        "sampleRate": 44100
-    }
-}
