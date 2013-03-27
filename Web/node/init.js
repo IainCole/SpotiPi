@@ -2,8 +2,7 @@ var http = require('http');
 var fs = require('fs');
 var io = require('socket.io');
 var url = require('url');
-var sp = require('node-libspotify');
-var Speaker = require('speaker');
+var spotifyServer = require('./spotify-server');
 
 var config, lang, user;
 
@@ -74,73 +73,16 @@ var app = http.createServer(function (req, res) {
 			res.end(data);
 		}
 	});
-}).listen(config.Port);
+}).listen(config.port);
 
 console.log('Server listening on port ' + config.Port);
 
 // Set up Websockets listener
 console.log('Setting up WebSockets listener');
 
-var socket = io.listen(app);
+var socketio = io.listen(app);
 
-socket.sockets.on('connection', function (socket) {
-	socket.emit('firstConnect', { hello: 'world' });
-	socket.on('clientData', function (data) {
-		console.log(data);
-	});
-});
+console.log('Setting up Spotify Server');
 
-console.log('WebSockets set up!');
-
-console.log('Setting Up Audio');
-
-var spk = new Speaker({
-	channels: 2,
-	bitDepth: 16,
-	sampleRate: 44100
-});
-
-console.log('Initialising Spotify');
-
-var session = new sp.Session({
-	applicationKey: __dirname + '/../../../private/SpotiPi/appkey/appkey.key'
-});
-
-session.login(user.Username, user.Password);
-
-session.once('login', function(err) {
-    if(err) this.emit('error', err);
-
-    var search = new sp.Search('artist:"rick astley" track:"never gonna give you up"');
-    search.trackCount = 1; // we're only interested in the first result;
-    search.execute();
-    search.once('ready', function() {
-        if(!search.tracks.length) {
-            console.error('there is no track to play :[');
-            session.logout();
-        }
-
-        var track = search.tracks[0];
-        var player = session.getPlayer();
-        player.load(track);
-        player.play();
-
-        player.pipe(spk);
-
-        console.error('playing track. end in %s', track.humanDuration);
-        player.on('data', function(buffer) {
-            // buffer.length
-            // buffer.rate
-            // buffer.channels
-            // 16bit samples
-        });
-        player.once('track-end', function() {
-            console.error('track ended');
-            f.end();
-            player.stop();
-            session.close();
-        });
-    });
-});
-
+var server = new spotifyServer(user, { socketio: socketio, appkey: __dirname + '/../../../private/SpotiPi/appkey/appkey.key', audio: config.audio });
 
