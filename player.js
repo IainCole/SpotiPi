@@ -63,6 +63,7 @@ var login = function (data) {
             return;
         }
         player = session.getPlayer();
+        console.log('logged on');
         
         // Need to get a handle on all the audio buffer shiz, it's not doing what I would expect it to, I think libspotify is sending data faster than it is being consumed in node
         // Node is handling the backlog but it's causing issues with events like track_ended which is sent once libspotify has delivered all the samples for the track
@@ -106,10 +107,11 @@ var onPlaylistContainerLoaded = function (plc) {
 		
 			process.send({ cmd: 'playlistContainerLoaded', data: { playlists: playlists } });		
 			
-			// We should probably handle the loading and unloading of playlists better than just reloading the listing the whole time
-			plc.on('playlist_added', onPlaylistChange);
-			plc.on('playlist_removed', onPlaylistChange);
-			plc.on('playlist_moved', onPlaylistChange);
+//			 We should probably handle the loading and unloading of playlists better than just reloading the listing the whole time
+//				plc.on('playlist_added', onPlaylistChange);
+//				plc.on('playlist_removed', onPlaylistChange);
+//				plc.on('playlist_moved', onPlaylistChange);
+//			}
 		});
 	};
 

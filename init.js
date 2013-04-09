@@ -42,7 +42,6 @@ catch (err) {
 }
 console.log('User File Loaded');
 
-
 // Set Up HTTP Server
 var app = http.createServer(function (req, res) {
 	var fileName = './html/index.html';
